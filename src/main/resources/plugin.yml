@@ -1,0 +1,24 @@
+name: ServerInfo
+main: me.stevetech.serverinfo.ServerInfo
+version: 1.0
+description: A Server Info Plugin
+author: Steve-Tech
+api-version: 1.16
+commands:
+  Info:
+    description: Shows info about the server
+    usage: /<command>
+    permission: ServerInfo.info
+    permission-message: You don't have permission to use this command!
+  ServerInfo:
+    description: Reload the ServerInfo plugin
+    usage: /<command> [reload]
+    permission: ServerInfo.reload
+    permission-message: You don't have permission to use this command!
+permissions:
+  ServerInfo.info:
+    description: Shows info about the server
+    default: true
+  ServerInfo.reload:
+    description: Reload the ServerInfo plugin
+    default: op
