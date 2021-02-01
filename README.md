@@ -25,11 +25,11 @@ first-join-only: false
 ## Commands
 - Info:
   - Description: Shows info about the server
-  - Usage: /<command>
+  - Usage: /\<command\>
   - Permission: ServerInfo.info
   - Default: true
 - ServerInfo:
   - Description: Reload the ServerInfo plugin
-  - Usage: /<command> [reload]
+  - Usage: /\<command\> [reload]
   - Permission: ServerInfo.reload
   - Default: op
