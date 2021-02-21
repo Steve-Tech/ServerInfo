@@ -1,5 +1,6 @@
 package me.stevetech.serverinfo;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -25,7 +26,7 @@ public class ServerInfo extends JavaPlugin implements Listener {
         getConfig().options().copyDefaults(true);
         saveConfig();
 
-        loadText();
+        loadText(null);
 
         getServer().getPluginManager().registerEvents(this, this);
 
@@ -40,12 +41,13 @@ public class ServerInfo extends JavaPlugin implements Listener {
     }
 
     @SuppressWarnings("unchecked")
-    private void loadText() {
+    private void loadText(Player player) {
         List<String> configText = (List<String>) getConfig().getList("message");
         ChatColor hoverColor = ChatColor.valueOf(getConfig().getString("hover-color"));
         info = new TextComponent();
         for (int i = 0; i < configText.size(); i++) {
-            String message = configText.get(i);
+            String message = (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) ?
+                    PlaceholderAPI.setPlaceholders(player, configText.get(i)) : configText.get(i);
             Pattern pattern = Pattern.compile("(\\[.*?\\] ?\\(.*?\\))");
             Matcher matcher = pattern.matcher(message);
 
@@ -106,13 +108,21 @@ public class ServerInfo extends JavaPlugin implements Listener {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (cmd.getName().equalsIgnoreCase("info") && sender.hasPermission("serverinfo.info")) {
-            sender.spigot().sendMessage(info);
-            return true;
+            if (getConfig().getBoolean("refresh-on-send")) {
+                getServer().getScheduler().runTaskAsynchronously(this, () -> {
+                    loadText((Player) sender);
+                    sender.spigot().sendMessage(info);
+                });
+            }
+            else {
+                sender.spigot().sendMessage(info);
+                return true;
+            }
         }
         if (cmd.getName().equalsIgnoreCase("serverinfo") && sender.hasPermission("serverinfo.reload")
                 && args.length == 1 && args[0].equals("reload")) {
             reloadConfig();
-            loadText();
+            loadText(null);
             sender.sendMessage("Reloaded Config.");
             return true;
         }
@@ -121,12 +131,17 @@ public class ServerInfo extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (getConfig().getBoolean("show-on-join")) {
+        if (getConfig().getBoolean("show-on-join") || getConfig().getBoolean("first-join-only")) {
             Player player = event.getPlayer();
             if (player.hasPermission("serverinfo.info") && (!getConfig().getBoolean("first-join-only") ||
                     (getConfig().getBoolean("first-join-only") && !player.hasPlayedBefore()))) {
                 getServer().getScheduler().runTaskLater(this, () -> {
-                    player.spigot().sendMessage(info);
+                    if (getConfig().getBoolean("refresh-on-send")) {
+                        getServer().getScheduler().runTaskAsynchronously(this, () -> {
+                            loadText(player);
+                            player.spigot().sendMessage(info);
+                        });
+                    } else player.spigot().sendMessage(info);
                 }, 1L);
             }
         }

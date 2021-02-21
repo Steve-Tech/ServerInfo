@@ -1,9 +1,10 @@
 name: ServerInfo
 main: me.stevetech.serverinfo.ServerInfo
-version: 1.0
+version: 1.1
 description: A Server Info Plugin
 author: Steve-Tech
 api-version: 1.16
+softdepend: [PlaceholderAPI]
 commands:
   Info:
     description: Shows info about the server

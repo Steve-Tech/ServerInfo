@@ -1,5 +1,5 @@
 # ServerInfo
-A simple and lightweight info plugin.
+A simple and lightweight info plugin that supports a Markdown similar syntax for links and commands, as well as PlaceholderAPI placeholders.
 ## Config
 ```yaml
 # Config File for Steve's ServerInfo Plugin
@@ -17,10 +17,11 @@ message:
   - ''
   - '&6----------------------------------------------------------------'
   - ''
-show-hover: true
-hover-color: YELLOW
-show-on-join: true
-first-join-only: false
+show-hover: true # Enables a hover message that shows what will happen when clicked
+hover-color: YELLOW # The colour of the hover message
+refresh-on-send: false # This will refresh the message everytime its send, useful for dynamic papi placeholders
+show-on-join: true # Shows the message on join
+first-join-only: false # Only show on the first join
 ```
 ## Commands
 - Info:
